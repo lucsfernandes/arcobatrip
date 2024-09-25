@@ -36,6 +36,6 @@ app.register(getTripDetails);
 
 const port = env.PORT || 3000;
 
-app.listen({ port }).then(() => {
+app.listen({ port, host: '0.0.0.0' }).then(() => {
   console.log(`server is running on port ${port}`)
 })
