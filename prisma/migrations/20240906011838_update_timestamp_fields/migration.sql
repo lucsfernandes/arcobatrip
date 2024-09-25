@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "activities" ALTER COLUMN "occurs_at" SET DATA TYPE TIMESTAMP(6);
+
+-- AlterTable
+ALTER TABLE "trips" ALTER COLUMN "created_at" SET DATA TYPE TIMESTAMP(6),
+ALTER COLUMN "updated_at" SET DATA TYPE TIMESTAMP(6);
