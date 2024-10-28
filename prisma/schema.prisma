@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -21,6 +21,7 @@ model Trip {
   participants Participant[]
   activities   Activity[]
   links        Link[]
+  User         User[]
 
   @@map("trips")
 }
@@ -58,4 +59,19 @@ model Link {
   trip Trip @relation(fields: [trip_id], references: [id])
 
   @@map("links")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String
+  first_name   String
+  last_name    String
+  phone_number String
+  email        String   @unique
+  password     String
+  created_at   DateTime @default(now()) @db.Timestamp(6)
+  updated_at   DateTime @updatedAt @db.Timestamp(6)
+  trips        Trip[]
+
+  @@map("users")
 }

@@ -1,4 +1,5 @@
 import fastify from "fastify";
+import jwt from "@fastify/jwt";
 import cors from "@fastify/cors";
 import { createTrip } from "./routes/create-trip";
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
@@ -13,26 +14,49 @@ import { updateTrip } from "./routes/update-trip";
 import { getTripDetails } from "./routes/get-trip-details";
 import { getParticipants } from "./routes/get-participants";
 import { env } from "./env";
-const app = fastify();
+import { registerUser } from "./routes/register-user";
+import { login } from "./routes/login-user";
+import authPlugin from "./middlewares/auth";
+const app = fastify({
+  logger: true
+});
 
 app.register(cors, {
   origin: '*'
 });
 
+app.register(jwt, {
+  secret: env.JWT_SECRET
+});
+
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
-app.register(createTrip);
-app.register(confirmTrip);
-app.register(confirmParticipant);
-app.register(createActivity);
-app.register(getActivity);
-app.register(createLink);
-app.register(getLinks);
-app.register(getParticipants);
-app.register(createInvite);
-app.register(updateTrip);
-app.register(getTripDetails);
+app.register(authPlugin, async function (fastifyInstance) {
+  app.register(registerUser);
+  app.register(login);
+
+  //Trip
+  createTrip(fastifyInstance);
+  confirmTrip(fastifyInstance);
+  getTripDetails(fastifyInstance);
+  updateTrip(fastifyInstance);
+
+  //Participant
+  confirmParticipant(fastifyInstance);
+  getParticipants(fastifyInstance);
+
+  //Activity
+  createActivity(fastifyInstance);
+  getActivity(fastifyInstance);
+
+  //Link
+  createLink(fastifyInstance);
+  getLinks(fastifyInstance);
+
+  //Invite
+  createInvite(fastifyInstance);
+});
 
 const port = env.PORT || 3000;
 
